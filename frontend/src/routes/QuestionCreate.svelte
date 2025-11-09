@@ -2,6 +2,7 @@
     import { push } from 'svelte-spa-router'
     import fastapi from "../lib/api"
     import Error from "../components/Error.svelte"
+    import { boardid } from "../lib/store"
 
     let error = {detail:[]}
     let subject = ''
