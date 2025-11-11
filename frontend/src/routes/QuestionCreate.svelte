@@ -14,6 +14,7 @@
         let params = {
             subject: subject,
             content: content,
+            board_id: $boardid,
         }
         fastapi('post', url, params, 
             (json) => {
@@ -24,6 +25,8 @@
             }
         )
     }
+
+    console.log('질문번호는 이거다'+$boardid)
 </script>
 
 <div class="container">

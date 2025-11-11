@@ -28,6 +28,7 @@ class QuestionDetails(Question):
 class QuestionCreate(BaseModel):
     subject: str
     content: str
+    board_id: int
 
     @field_validator('subject', 'content')
     def not_empty(cls, v):

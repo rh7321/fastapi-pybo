@@ -5,6 +5,7 @@ from domain.user.user_schema import User
 
 class AnswerCreate(BaseModel):
     content: str
+    page: int
 
 
     @field_validator('content')

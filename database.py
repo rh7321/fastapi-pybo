@@ -6,18 +6,17 @@ from sqlalchemy.orm import sessionmaker
 from starlette.config import Config
 
 config = Config('.env')
-SQLALCHEMY_DATABASE_URL = config('SQLALCHEMY_DATABASE_URL')
+SQLALCHEMY_DATABASE_URL_psdb = config('SQLALCHEMY_DATABASE_URL_psdb')
+SQLALCHEMY_DATABASE_URL_lite = config('SQLALCHEMY_DATABASE_URL_lite')
+#SQLALCHEMY_DATABASE_URL = "sqlite:///./myapi.db"
 
-# SQLALCHEMY_DATABASE_URL = "sqlite:///./myapi.db"
 
-if SQLALCHEMY_DATABASE_URL.startswith("sqlite"):
-    engine = create_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-    )
-else:
-    engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine_lite = create_engine(
+        SQLALCHEMY_DATABASE_URL_lite, connect_args={"check_same_thread": False})
+SessionLocal_lite = sessionmaker(autocommit=False, autoflush=False, bind=engine_lite)
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine_ps = create_engine(SQLALCHEMY_DATABASE_URL_psdb)
+SessionLocal_ps = sessionmaker(autocommit=False, autoflush=False, bind=engine_ps)
 
 Base = declarative_base()
 naming_convention = {
@@ -30,8 +29,18 @@ naming_convention = {
 Base.metadata = MetaData(naming_convention=naming_convention)
 
 # @contextlib.contextmanager
-def get_db():
-    db = SessionLocal()
+def get_ps_db():
+    db = SessionLocal_ps()
+    try:
+        yield db
+    except:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+def get_lite_db():
+    db = SessionLocal_lite()
     try:
         yield db
     except:

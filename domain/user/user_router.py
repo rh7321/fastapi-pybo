@@ -7,7 +7,7 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from starlette import status
 
-from database import get_db
+from database import get_ps_db
 from domain.user import user_crud, user_schema
 from domain.user.user_crud import pwd_context
 from starlette.config import Config
@@ -30,7 +30,7 @@ router = APIRouter(
 
 
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
-def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
+def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_ps_db)):
     user = user_crud.get_existing_user(db, user_create=_user_create)
     print(_user_create.password1)
     if user:
@@ -41,7 +41,7 @@ def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_
 
 @router.post("/login", response_model=user_schema.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
-                           db: Session = Depends(get_db)):
+                           db: Session = Depends(get_ps_db)):
 
     # check user and password
     user = user_crud.get_user(db, form_data.username)
@@ -66,7 +66,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
     }
 
 def get_current_user(token: str = Depends(oauth2_scheme),
-                     db: Session = Depends(get_db)):
+                     db: Session = Depends(get_ps_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

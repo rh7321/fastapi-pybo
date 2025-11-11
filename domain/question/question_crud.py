@@ -39,11 +39,14 @@ def get_question(db: Session, question_id: int,skip: int = 0, limit: int = 10):
 
 
 def create_question(db: Session, question_create: QuestionCreate, user: User):
+    # user = db.merge(user) # 다른 세션에서 가져온 user를 현재 세션으로 동기화
     db_question = Question(subject=question_create.subject,
-                           content=question_create.content,
+                           content=question_create.content,board_id=question_create.board_id,
                            create_date=datetime.now(),user=user)
+    print(f"유저처리 되나? : {user.id}")
     db.add(db_question)
     db.commit()
+
 
 def update_question(db: Session, db_question: Question,
                     question_update: QuestionUpdate):

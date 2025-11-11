@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from database import get_db
+from database import get_ps_db
 from domain.answer import answer_schema, answer_crud
 from domain.question import question_crud
 from domain.user.user_router import get_current_user
@@ -16,8 +16,7 @@ router = APIRouter(
 @router.post("/create/{question_id}", status_code=status.HTTP_204_NO_CONTENT)
 def answer_create(question_id: int,
                   _answer_create: answer_schema.AnswerCreate,
-                  db: Session = Depends(get_db),current_user: User = Depends(get_current_user)):
-
+                  db: Session = Depends(get_ps_db),current_user: User = Depends(get_current_user)):
     # create answer
     question = question_crud.get_question(db, question_id=question_id)
     if not question:
@@ -27,14 +26,14 @@ def answer_create(question_id: int,
 
 
 @router.get("/detail/{answer_id}", response_model=answer_schema.Answer)
-def answer_detail(answer_id: int, db: Session = Depends(get_db)):
+def answer_detail(answer_id: int, db: Session = Depends(get_ps_db)):
     answer = answer_crud.get_answer(db, answer_id=answer_id)
     return answer
 
 
 @router.put("/update", status_code=status.HTTP_204_NO_CONTENT)
 def answer_update(_answer_update: answer_schema.AnswerUpdate,
-                  db: Session = Depends(get_db),
+                  db: Session = Depends(get_ps_db),
                   current_user: User = Depends(get_current_user)):
     db_answer = answer_crud.get_answer(db, answer_id=_answer_update.answer_id)
     if not db_answer:
@@ -49,7 +48,7 @@ def answer_update(_answer_update: answer_schema.AnswerUpdate,
 
 @router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
 def answer_delete(_answer_delete: answer_schema.AnswerDelete,
-                  db: Session = Depends(get_db),
+                  db: Session = Depends(get_ps_db),
                   current_user: User = Depends(get_current_user)):
     db_answer = answer_crud.get_answer(db, answer_id=_answer_delete.answer_id)
     if not db_answer:
@@ -62,7 +61,7 @@ def answer_delete(_answer_delete: answer_schema.AnswerDelete,
 
 @router.post("/vote", status_code=status.HTTP_204_NO_CONTENT)
 def answer_vote(_answer_vote: answer_schema.AnswerVote,
-                db: Session = Depends(get_db),
+                db: Session = Depends(get_ps_db),
                 current_user: User = Depends(get_current_user)):
     db_answer = answer_crud.get_answer(db, answer_id=_answer_vote.answer_id)
     if not db_answer:

@@ -17,7 +17,6 @@
     let a_total = 0
     let total_page = 0
     let page = 0
-
    
     function get_question(loop_page) {
         let params = {
@@ -29,7 +28,7 @@
             a_total = question.a_total
             page = loop_page
             total_page = Math.ceil(a_total/size)
-            console.log("답변 개수:", page)
+            
         })
     }
 
@@ -39,13 +38,15 @@
         event.preventDefault()
         let url = "/api/answer/create/" + question_id
         let params = {
-            content: content
+            content: content,
+            page: page,
         }
         fastapi('post', url, params, 
             (json) => {
                 content = ''
+                page = 0
                 error = {detail:[]}
-                get_question()
+                get_question(0)
             },
             (err_json) => {
                 error = err_json
